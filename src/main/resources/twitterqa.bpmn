@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0hgk7zn" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.8.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
-  <bpmn:process id="TwitterQAProcess" name="Twitter QA" isExecutable="true" camunda:historyTimeToLive="15">
-    <bpmn:startEvent id="TweetReceived_StartEvent" name="Tweet received">
+  <bpmn:process id="TwitterQAProcess" name="Twitter QA" isExecutable="true">
+    <bpmn:startEvent id="TweetReceived_StartEvent" name="Tweet received" camunda:formKey="embedded:app:forms/start.html">
       <bpmn:outgoing>Flow_005aqhz</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="Flow_005aqhz" sourceRef="TweetReceived_StartEvent" targetRef="ReviewTweet_UserTask" />
@@ -30,11 +30,11 @@
       <bpmn:outgoing>Flow_1yw66tp</bpmn:outgoing>
       <bpmn:script>print('Tweet rejected');</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:serviceTask id="PublishTweet_ServiceTask" name="Publish Tweet" camunda:delegateExpression="${createTweetDelegate}">
+    <bpmn:serviceTask id="PublishTweet_ServiceTask" name="Publish Tweet" camunda:asyncBefore="true" camunda:delegateExpression="${createTweetDelegate}">
       <bpmn:incoming>Flow_10t1qbv</bpmn:incoming>
       <bpmn:outgoing>Flow_079p4dw</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:userTask id="ReviewTweet_UserTask" name="Review Tweet" camunda:candidateGroups="management">
+    <bpmn:userTask id="ReviewTweet_UserTask" name="Review Tweet" camunda:formKey="embedded:app:forms/review.html" camunda:candidateGroups="management">
       <bpmn:incoming>Flow_005aqhz</bpmn:incoming>
       <bpmn:outgoing>Flow_0wodyry</bpmn:outgoing>
     </bpmn:userTask>

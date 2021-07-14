@@ -5,6 +5,7 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
@@ -23,6 +24,6 @@ public class CreateTweetDelegate implements JavaDelegate {
         Twitter twitter = new TwitterFactory().getInstance();
         twitter.setOAuthConsumer("lRhS80iIXXQtm6LM03awjvrvk", "gabtxwW8lnSL9yQUNdzAfgBOgIMSRqh7MegQs79GlKVWF36qLS");
         twitter.setOAuthAccessToken(accessToken);
-        twitter.updateStatus(content);
+        twitter.updateStatus(content); // Persist to Domain Database
     }
 }

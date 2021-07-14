@@ -1,5 +1,6 @@
 package com.camunda.training;
 
+import org.camunda.bpm.engine.runtime.Job;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.task.Task;
 import org.camunda.bpm.engine.test.Deployment;
@@ -52,6 +53,16 @@ public class ProcessJUnitTest {
     //Fast Way to complete UserTask with mandatory checks
     assertThat(processInstance).isWaitingAt("ReviewTweet_UserTask");
     complete(task("ReviewTweet_UserTask"), withVariables("approved", true));
+
+    //Asynch Behaviour detailled
+    /*
+    List<Job> jobList = managementService().createJobQuery().processInstanceId(processInstance.getId()).list();
+    org.assertj.core.api.Assertions.assertThat(jobList).hasSize(1);
+    Job job = jobList.get(0);
+    execute(job);*/
+
+    assertThat(processInstance).isWaitingAt("PublishTweet_ServiceTask");
+    execute(job());
 
     assertThat(processInstance).isEnded().hasPassed("PublishTweet_ServiceTask");
   }
