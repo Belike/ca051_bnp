@@ -117,6 +117,17 @@
       <scope>test</scope>
     </dependency>
 
+      <dependency>
+          <groupId>org.camunda.bpm</groupId>
+          <artifactId>camunda-external-task-client</artifactId>
+          <version>1.4.0</version>
+      </dependency>
+      <dependency>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+          <version>1.2.3</version>
+      </dependency>
+
   </dependencies>
 
   <repositories>
