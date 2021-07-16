@@ -1,5 +1,7 @@
 package com.camunda.training;
 
+import org.camunda.bpm.dmn.engine.DmnDecisionTableResult;
+import org.camunda.bpm.engine.DecisionService;
 import org.camunda.bpm.engine.runtime.Job;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.task.Task;
@@ -92,5 +94,43 @@ public class ProcessJUnitTest {
     complete(externalTask());
 
     assertThat(processInstance).isEnded().hasPassed("TweetRejected_EndEvent");
+  }
+
+  @Test
+  @Deployment(resources = "twitterqa.bpmn")
+  public void tweetSuperUser() {
+    ProcessInstance processInstance = runtimeService()
+            .createMessageCorrelation("superuserTweet")
+            .setVariable("content", "Exercise 11 by Norman: " + ThreadLocalRandom.current().nextInt())
+            .correlateWithResult()
+            .getProcessInstance();
+    assertThat(processInstance).isStarted();
+    assertThat(processInstance).isWaitingAt("PublishTweet_ServiceTask");
+    execute(job());
+
+    assertThat(processInstance).isEnded();
+  }
+
+  @Test
+  @Deployment(resources = "twitterqa.bpmn")
+  public void tweetWithdrawn(){
+    ProcessInstance processInstance = runtimeService()
+            .startProcessInstanceByKey("TwitterQAProcess", "MyBusinessKey_001", withVariables("content", "Test tweetWithdrawn message"));
+    assertThat(processInstance).isStarted();
+
+    assertThat(processInstance).isWaitingAt("ReviewTweet_UserTask");
+    runtimeService().createMessageCorrelation("tweetWithdrawn")
+            .processInstanceBusinessKey("MyBusinessKey_001")
+            .correlateWithResult();
+    assertThat(processInstance).isEnded();
+  }
+
+  @Test
+  @Deployment(resources = "tweetApproval.dmn")
+  public void testTweetFromNorman() {
+    DmnDecisionTableResult result = processEngine()
+            .getDecisionService()
+            .evaluateDecisionTableByKey("tweetApproval", withVariables("email","norman.luering234@camunda.com","content", "camunda rocks"));
+    org.assertj.core.api.Assertions.assertThat(result.getFirstResult()).containsEntry("approved", true);
   }
 }
